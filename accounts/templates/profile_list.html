@@ -1,0 +1,55 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Profile List</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 p-10">
+    <div class="max-w-4xl mx-auto bg-white p-6 rounded shadow">
+        <div class="flex justify-between items-center mb-6">
+            <h2 class="text-2xl font-bold">All Profiles</h2>
+            <a href="{% url 'register' %}" class="bg-blue-500 text-white px-4 py-2 rounded">Register</a>
+        </div>
+
+        <form method="post">
+            {% csrf_token %}
+            <div class="mb-4">
+                <button type="submit" class="bg-red-500 text-white px-4 py-2 rounded"
+                        onclick="return confirm('Are you sure you want to delete the selected profiles?');">
+                    Delete Selected
+                </button>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {% for profile in profiles %}
+                    <div class="p-4 border rounded flex items-center space-x-4">
+                        <input type="checkbox"
+                               name="selected_profiles"
+                               value="{{ profile.id }}"
+                               class="form-checkbox text-red-600 h-5 w-5"
+                               {% if profile.user == request.user %}disabled{% endif %}>
+
+                        {% if profile.avatar %}
+                            <img src="{{ profile.avatar.url }}" class="w-16 h-16 rounded-full object-cover">
+                        {% else %}
+                            <div class="w-16 h-16 rounded-full bg-gray-300 flex items-center justify-center text-white">N/A</div>
+                        {% endif %}
+
+                        <div>
+                            <p class="font-semibold">
+                                {{ profile.user.username }}
+                                {% if profile.user == request.user %}
+                                    <span class="text-sm text-green-600">(You)</span>
+                                {% endif %}
+                            </p>
+                            <p class="text-sm text-gray-600">{{ profile.bio|default:"No bio" }}</p>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        </form>
+    </div>
+</body>
+</html>
